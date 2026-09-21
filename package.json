@@ -1,0 +1,21 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "Tinder for devloper (connect and code)",
+  "keywords": [
+    "nodejs",
+    "javascript",
+    "MongoDB"
+  ],
+  "license": "ISC",
+  "author": "Aditya Paliwal",
+  "type": " ",
+  "main": "index.js",
+  "scripts": {
+    "start" : "node src/app.js",
+    "dev" : "nodemon src/app.js "
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
