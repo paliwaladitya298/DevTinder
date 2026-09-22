@@ -7,12 +7,10 @@ app.get("/a*c", (req , res)=>{
 })
 
 app.get("/a{b}c", (req , res)=>{
-    res.send("ignore b ")
+    res.send("ignore b ") 
 })
 
-// app.get( /a/ , (req , res)=>{
-//     res.send("URL me kahi par bhi a aaya toh chlega")
-// })
+
 
 app.get(/.*fly$/ , (req , res)=>{
     res.send("kuch bhi likho par ankhri me fly hua to chale ga ")
@@ -26,9 +24,21 @@ app.get("/user", (req , res)=>{
 
 app.get("/user/:userId/:name/:age" ,(req , res)=>{
     console.log(req.params);
-    
     res.send("learning req.params")
 })
+
+app.use("/dmin", (req , res , next)=>{
+   console.log("route handler 1");
+   res.send("send 1")
+   next()
+},
+(req , res)=>{
+   console.log("route handler 2");
+   res.send("send 2")
+})
+
+
+
 
 app.listen(3000 , ()=>{
     console.log("server is running");
