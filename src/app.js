@@ -11,6 +11,9 @@ app.get("/a{b}c", (req , res)=>{
 })
 
 
+// app.get( /a/ , (req , res)=>{
+//     res.send("URL me kahi par bhi a aaya toh chlega")
+// })
 
 app.get(/.*fly$/ , (req , res)=>{
     res.send("kuch bhi likho par ankhri me fly hua to chale ga ")
