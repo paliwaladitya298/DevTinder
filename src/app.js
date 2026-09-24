@@ -40,6 +40,31 @@ app.use("/dmin", (req , res , next)=>{
    res.send("send 2")
 })
 
+// this is learning purpose routes playing with get , use , next()
+
+app.get("/user" , (req , res ,next)=>{
+// res.send("Handling routes 1")
+console.log("Is this run ");
+
+  next()
+})
+
+
+app.get("/user", (req , res , next)=>{
+    
+    console.log("Middleware 1");
+    next()
+},
+(req , res , next)=>{
+    console.log("Middleware 2");
+    next()
+},
+(req , res , next)=>{
+
+    res.send("yu")
+   next()
+},
+)
 
 
 
