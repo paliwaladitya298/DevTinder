@@ -9,7 +9,7 @@ app.use(express.json())
 
 app.post("/signUp" , async (req , res)=>{
     
-    console.log(req);
+    console.log(req.body);
     
     const addedUser = new User(req.body)
 
