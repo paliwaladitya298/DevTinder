@@ -11,12 +11,13 @@ app.post("/signUp" , async (req ,res)=>{
         
      const addedUser = new User(req.body)
 
+
     try{
     await addedUser.save()
     res.send("User data added")
     }
      catch(err){
-        res.status(400),send("something went wrong !!!")
+        res.status(400).send(err.message)
      }
 })
 
@@ -59,34 +60,53 @@ app.delete('/user' , async (req ,res) =>{
 const userId = req.body.userid
 
 try {
-      const user = await User.findByIdAndDelete(userId)
+      const user = await User.DeleteMany(userId)
     res.send(" User deleted")
 } catch (error) {
     res.send("something went wrong ")
 }
 })
 
-app.patch('/user' , async (req ,res) =>{
-const userId = req.body.userid
+app.patch('/user' , async (req ,res , next) =>{
+const userId = req.body.userId
 const data = req.body;
 
+const ALLOWED_UPDATE = [
+    "userId",
+    "photo",
+    "about",
+    "gender",
+    "age",
+    "skills"
+]
+
+
+
 try {
-     const user = await User.findByIdAndUpdate(userId , data  , {returnDocument : "after"})
-     console.log(user);
-     
-    res.send(" User Updated")
-} catch (error) {
-    res.send("something went wrong ")
+
+    const isUpdateAllowed = Object.keys(data).every((k)=> ALLOWED_UPDATE.includes(k))
+console.log(isUpdateAllowed);
+
+if(!isUpdateAllowed){
+    throw new Error("Update not allowed ")
 }
+     const user = await User.findByIdAndUpdate(userId , data  , {returnDocument : "after" , runValidators : true} )
+        next()
+} catch (error) {
+    res.status(400).send(error.message)
+}
+} , (req , res)=>{
+      res.send(" User Updated")
 })
 
-connectB().then( ()=>{
+connectB().then(  ()=>{
     console.log("Database connected successfully");
+  
     app.listen(3000 , ()=>{console.log("Server is running on port 3000");
 })
 }
-).catch((err) =>{
-    console.log("Not connected to Database");
+).catch((err) =>{ 
+    console.log(err);
     
 })
 
