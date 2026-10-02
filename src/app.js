@@ -7,7 +7,6 @@ const mongoose = require("mongoose")
 
 app.use(express.json())
 
-
 app.post("/signUp" , async (req ,res)=>{
         
      const addedUser = new User(req.body)
@@ -53,6 +52,31 @@ try {
     res.send(allUser)
 } catch (err) {
     res.send("something went wrong")
+}
+})
+
+app.delete('/user' , async (req ,res) =>{
+const userId = req.body.userid
+
+try {
+      const user = await User.findByIdAndDelete(userId)
+    res.send(" User deleted")
+} catch (error) {
+    res.send("something went wrong ")
+}
+})
+
+app.patch('/user' , async (req ,res) =>{
+const userId = req.body.userid
+const data = req.body;
+
+try {
+     const user = await User.findByIdAndUpdate(userId , data  , {returnDocument : "after"})
+     console.log(user);
+     
+    res.send(" User Updated")
+} catch (error) {
+    res.send("something went wrong ")
 }
 })
 
