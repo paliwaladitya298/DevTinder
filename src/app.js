@@ -2,17 +2,21 @@ const express = require("express")
 const  app = express()
 const {connectB} = require("./config/database")
 const {User} = require("./model/userModel")
+const {validationUser} = require("./utils/validation")
 const mongoose = require("mongoose")
+
 
 
 app.use(express.json())
 
 app.post("/signUp" , async (req ,res)=>{
-        
-     const addedUser = new User(req.body)
-
-
+ 
     try{
+    // validation of User
+
+    validationUser(req)
+
+    const addedUser = new User(req.body)
     await addedUser.save()
     res.send("User data added")
     }
@@ -67,6 +71,7 @@ try {
 }
 })
 
+
 app.patch('/user' , async (req ,res , next) =>{
 const userId = req.body.userId
 const data = req.body;
@@ -80,24 +85,23 @@ const ALLOWED_UPDATE = [
     "skills"
 ]
 
-
-
 try {
-
     const isUpdateAllowed = Object.keys(data).every((k)=> ALLOWED_UPDATE.includes(k))
 console.log(isUpdateAllowed);
 
 if(!isUpdateAllowed){
     throw new Error("Update not allowed ")
 }
+if(data?.skills?.length > 3){
+throw new Error("you can not add more than 3 skills")
+}
      const user = await User.findByIdAndUpdate(userId , data  , {returnDocument : "after" , runValidators : true} )
-        next()
+    res.send("user update Successfully")
 } catch (error) {
     res.status(400).send(error.message)
 }
-} , (req , res)=>{
-      res.send(" User Updated")
 })
+
 
 connectB().then(  ()=>{
     console.log("Database connected successfully");
@@ -109,4 +113,3 @@ connectB().then(  ()=>{
     console.log(err);
     
 })
-
