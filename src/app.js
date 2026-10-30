@@ -3,6 +3,7 @@ const  app = express()
 const {connectB} = require("./config/database")
 const {User} = require("./model/userModel")
 const {validationUser} = require("./utils/validation")
+const bcrypt = require("bcrypt")
 const mongoose = require("mongoose")
 
 
@@ -13,10 +14,20 @@ app.post("/signUp" , async (req ,res)=>{
  
     try{
     // validation of User
-
     validationUser(req)
+    
+     const {firstName , lastName , emailId , password} = req.body
 
-    const addedUser = new User(req.body)
+    // Encrypting the password
+    const passwordHash = await bcrypt.hash(password , 10)
+    console.log(passwordHash);
+    
+    const addedUser = new User({firstName ,
+         lastName , 
+         emailId , 
+         password : passwordHash})
+    
+    // Create new instance
     await addedUser.save()
     res.send("User data added")
     }

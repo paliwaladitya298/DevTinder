@@ -16,8 +16,6 @@ const validationUser = (req) =>{
     if(!validator.isStrongPassword(password)){
         throw new Error("Enter the strong password")
     }
-
-
 }
 
 module.exports = {validationUser}
