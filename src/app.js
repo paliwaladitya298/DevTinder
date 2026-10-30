@@ -4,6 +4,7 @@ const {connectB} = require("./config/database")
 const {User} = require("./model/userModel")
 const {validationUser} = require("./utils/validation")
 const bcrypt = require("bcrypt")
+const validator = require("validator")
 const mongoose = require("mongoose")
 
 
@@ -32,6 +33,35 @@ app.post("/signUp" , async (req ,res)=>{
     res.send("User data added")
     }
      catch(err){
+        res.status(400).send(err.message)
+     }
+})
+
+app.post("/login" , async (req , res)=>{
+
+    try{
+
+       const {emailId , password} = req.body
+
+
+       if(!validator.isEmail(emailId)){
+        throw new Error("Email is not correct")
+       }
+       
+       const user = await User.findOne({emailId : emailId}) 
+       if(!user){
+        return res.send("Invalid Credential")
+       }
+       const is_password_valid = await bcrypt.compare(password , user.password)
+
+       if(is_password_valid){
+        return res.send("user valid login successfully")
+       }
+      else{
+       throw new Error("invalid Credential")
+      }
+
+    } catch(err){
         res.status(400).send(err.message)
      }
 })
