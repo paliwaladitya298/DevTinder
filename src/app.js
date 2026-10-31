@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser")
 const validator = require("validator")
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
+const {Authuser} = require("./middlware/auth")
 
 
 
@@ -59,10 +60,10 @@ app.post("/login" , async (req , res)=>{
 
        if(is_password_valid){
         // Create JWT
-        const jwt_token = jwt.sign({_id : user._id } ,"Adity3637")
+        const jwt_token = jwt.sign({_id : user._id } ,"Adity3637" , {expiresIn : "1h"})
          
-        //
-        res.cookie('token' , jwt_token)
+        // Add the token to cookie and send the response back to the user 
+        res.cookie('token' , jwt_token , {expires : new Date(Date.now() + 1 * 3600000)})
         res.send("user valid login successfully")
        }
       else{
@@ -74,24 +75,19 @@ app.post("/login" , async (req , res)=>{
      }
 })
 
-app.get('/profile' , async(req , res)=>{
-   
-    const cookies = req.cookies;
-    const {token} = cookies
-    console.log(token);
+app.get('/profile' , Authuser , async(req , res)=>{
 
-    const {_id} = decodedMessage = jwt.verify(token , "Adity3637")
-    console.log(decodedMessage);
-    
-     const user = await User.findOne({_id})
-     console.log("login in by " , user.firstName);
-
-     if(!user){
-        throw new Error("User not exists");
+    try{
+        const user = req.user
+        console.log(req);
+        
+        res.send(user)
+    }
+    catch(err){
+        res.status(400).send(err.message)
      }
-     
-    res.send(user)
 })
+
 app.get("/user" , async (req ,res)=>{
 
 const userEmail = req.body.emailId  

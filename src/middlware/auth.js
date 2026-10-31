@@ -1,24 +1,25 @@
+const jwt = require("jsonwebtoken")
+const {User} = require("../model/userModel") 
 
-const Authuser = (req , res , next)=>{
-const token = "abc";
-const Authorizing = token === "abc";
-if(!Authorizing){
-    res.status(401).send("Sorry invalid information")
-}
-else{
+const Authuser = async(req , res , next)=>{
+try {
+    const cookie = req.cookies
+     const {token} = cookie
+   if(!token){
+    throw new Error("Invalid Token")
+    }
+    const decodedObj = await jwt.verify(token , "Adity3637")
+    console.log(decodedObj);  
+    const {_id} = decodedObj
+    const user = await User.findById(_id)
+    if(!user){
+        throw new Error("User not valid");
+    }
+    req.user = user
     next()
+} catch (error) {
+    res.status(400).send("Error " + error.message)
 }
 }
 
-const Authadmin = (req ,res , next)=>{
-    const token = "abc";
-const Authorizing = token === "abc";
-if(!Authorizing){
-    res.status(401).send("Sorry invalid information")
-}
-else{
-    next()
-}
-}
-
-module.exports = {Authuser , Authadmin}
+module.exports = {Authuser}
