@@ -4,12 +4,15 @@ const {connectB} = require("./config/database")
 const {User} = require("./model/userModel")
 const {validationUser} = require("./utils/validation")
 const bcrypt = require("bcrypt")
+const cookieParser = require("cookie-parser")
 const validator = require("validator")
+const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
 
 
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.post("/signUp" , async (req ,res)=>{
  
@@ -21,7 +24,7 @@ app.post("/signUp" , async (req ,res)=>{
 
     // Encrypting the password
     const passwordHash = await bcrypt.hash(password , 10)
-    console.log(passwordHash);
+
     
     const addedUser = new User({firstName ,
          lastName , 
@@ -55,7 +58,12 @@ app.post("/login" , async (req , res)=>{
        const is_password_valid = await bcrypt.compare(password , user.password)
 
        if(is_password_valid){
-        return res.send("user valid login successfully")
+        // Create JWT
+        const jwt_token = jwt.sign({_id : user._id } ,"Adity3637")
+         
+        //
+        res.cookie('token' , jwt_token)
+        res.send("user valid login successfully")
        }
       else{
        throw new Error("invalid Credential")
@@ -66,6 +74,24 @@ app.post("/login" , async (req , res)=>{
      }
 })
 
+app.get('/profile' , async(req , res)=>{
+   
+    const cookies = req.cookies;
+    const {token} = cookies
+    console.log(token);
+
+    const {_id} = decodedMessage = jwt.verify(token , "Adity3637")
+    console.log(decodedMessage);
+    
+     const user = await User.findOne({_id})
+     console.log("login in by " , user.firstName);
+
+     if(!user){
+        throw new Error("User not exists");
+     }
+     
+    res.send(user)
+})
 app.get("/user" , async (req ,res)=>{
 
 const userEmail = req.body.emailId  
