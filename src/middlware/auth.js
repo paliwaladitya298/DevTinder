@@ -8,8 +8,7 @@ try {
    if(!token){
     throw new Error("Invalid Token")
     }
-    const decodedObj = await jwt.verify(token , "Adity3637")
-    console.log(decodedObj);  
+    const decodedObj = await jwt.verify(token , "Adity3637") 
     const {_id} = decodedObj
     const user = await User.findById(_id)
     if(!user){
